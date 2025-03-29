@@ -1,16 +1,52 @@
-<?xml version="1.0"?>
+from launch import LaunchDescription
+from launch_ros.actions import Node
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration, FindPackageShare
+from launch.conditions import IfCondition
+import os
 
-<launch>
-    <arg name="inverted" default="false" />
-    <node name="ls01g" pkg="ls01g" type="ls01g" output="screen">
-        <param name="scan_topic" value="scan"/>         #设置激光数据topic名称
-        <param name="laser_link" value="base_laser_link"/>     #激光坐标
-        <param name="serial_port" value="/dev/laser"/>  #雷达连接的串口
-        <param name="zero_as_max" value="false"/>        # 设置为true探测不到区域会变成最大值
-        <param name="min_as_zero" value="false"/>        # true：探测不到区域为0，false：探测不到区域为inf
-        <param name="angle_disable_min" value="-1"/>    # 角度制，从angle_disable_min到angle_disable_max之前的值为0
-        <param name="angle_disable_max" value="-1"/>
-        <param name="inverted" value="$(arg inverted)"/>           # 如果0度方向在串口线的方向上设置为true 
-    </node>
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find ls01g)/rviz/rviz.rviz"/>
-</launch>
+def generate_launch_description():
+    # Declare launch arguments
+    inverted_arg = DeclareLaunchArgument(
+        'inverted',
+        default_value='false',
+        description='Set to true if 0 degree direction aligns with serial cable'
+    )
+
+    # Find package share directory for rviz config
+    package_share_directory = FindPackageShare('ls01g')
+
+    # Define the ls01g node
+    ls01g_node = Node(
+        package='ls01g',
+        executable='ls01g_node',  # Adjust if your executable name differs
+        name='ls01g',
+        output='screen',
+        parameters=[
+            {'scan_topic': 'scan'},           # Laser data topic name
+            {'laser_link': 'base_laser_link'}, # Laser frame
+            {'serial_port': '/dev/laser'},     # Serial port for the radar
+            {'zero_as_max': False},           # True: undetected areas become max value
+            {'min_as_zero': False},           # True: undetected areas = 0, False: infinity
+            {'angle_disable_min': -1},        # Angle range (degrees) to disable (set to 0)
+            {'angle_disable_max': -1},
+            {'inverted': LaunchConfiguration('inverted')}  # Use launch argument
+        ]
+    )
+
+    # Define the RViz node
+    rviz_config_path = os.path.join(package_share_directory.launch_substitution(), 'rviz', 'rviz.rviz')
+    rviz_node = Node(
+        package='rviz2',
+        executable='rviz2',
+        name='rviz',
+        arguments=['-d', rviz_config_path],
+        output='screen'
+    )
+
+    # Create and return the launch description
+    return LaunchDescription([
+        inverted_arg,
+        ls01g_node,
+        rviz_node
+    ])

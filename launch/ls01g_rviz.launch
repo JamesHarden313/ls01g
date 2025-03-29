@@ -17,9 +17,9 @@ def generate_launch_description():
     package_share_directory = FindPackageShare('ls01g')
 
     # Define the ls01g node
-    ls01g_node = Node(
+    ls01g = Node(
         package='ls01g',
-        executable='ls01g_node',  # Adjust if your executable name differs
+        executable='ls01g',  # Adjust if your executable name differs
         name='ls01g',
         output='screen',
         parameters=[
@@ -47,6 +47,6 @@ def generate_launch_description():
     # Create and return the launch description
     return LaunchDescription([
         inverted_arg,
-        ls01g_node,
+        ls01g,
         rviz_node
     ])

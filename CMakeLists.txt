@@ -1,32 +1,57 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.8)
 project(ls01g)
 
-find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  rospy
+# Default to C++17
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 17)
+endif()
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+# Find dependencies
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+
+# Include directories
+include_directories(
+  include
+)
+
+# Add executable
+add_executable(ls01g_node src/ls01g.cpp)  # Adjust source file name as needed
+
+# Link libraries
+ament_target_dependencies(ls01g_node
+  rclcpp
   std_msgs
   sensor_msgs
 )
 
-
-catkin_package()
-
-include_directories(
-  ${catkin_INCLUDE_DIRS}/src
+# Install targets
+install(TARGETS
+  ls01g_node
+  DESTINATION lib/${PROJECT_NAME}
 )
 
-
-
-add_executable(ls01g src/main.cpp src/uart_driver.cpp)
-
-target_link_libraries(ls01g ${catkin_LIBRARIES})
-
-install(TARGETS ls01g
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+# Install launch files (if any)
+install(DIRECTORY
+  launch
+  DESTINATION share/${PROJECT_NAME}/
 )
 
-install(DIRECTORY launch
-        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+# Install include files (if any)
+install(DIRECTORY
+  include/
+  DESTINATION include/
 )
+
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
+endif()
+
+ament_package()

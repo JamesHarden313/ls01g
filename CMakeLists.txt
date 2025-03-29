@@ -22,7 +22,7 @@ include_directories(
 )
 
 # Add executable
-add_executable(ls01g_node src/ls01g.cpp)  # Adjust source file name as needed
+add_executable(ls01g_node src/main.cpp)  # Adjust source file name as needed
 
 # Link libraries
 ament_target_dependencies(ls01g_node

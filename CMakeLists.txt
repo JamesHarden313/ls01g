@@ -22,10 +22,10 @@ include_directories(
 )
 
 # Add executable
-add_executable(ls01g_node src/main.cpp)  # Adjust source file name as needed
+add_executable(ls01g src/main.cpp)  # Adjust source file name as needed
 
 # Link libraries
-ament_target_dependencies(ls01g_node
+ament_target_dependencies(ls01g
   rclcpp
   std_msgs
   sensor_msgs
@@ -33,7 +33,7 @@ ament_target_dependencies(ls01g_node
 
 # Install targets
 install(TARGETS
-  ls01g_node
+  ls01g
   DESTINATION lib/${PROJECT_NAME}
 )
 

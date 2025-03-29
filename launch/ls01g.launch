@@ -12,9 +12,9 @@ def generate_launch_description():
     )
 
     # Define the ls01g node
-    ls01g_node = Node(
+    ls01g = Node(
         package='ls01g',
-        executable='ls01g_node',  # Adjust this if your executable name differs
+        executable='ls01g',  # Adjust this if your executable name differs
         name='ls01g',
         output='screen',
         parameters=[
@@ -40,6 +40,6 @@ def generate_launch_description():
     # Create and return the launch description
     return LaunchDescription([
         inverted_arg,
-        ls01g_node,
+        ls01g,
         # rviz_node  # Uncomment to include RViz
     ])

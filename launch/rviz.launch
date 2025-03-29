@@ -1,5 +1,23 @@
-<?xml version="1.0"?>
+from launch import LaunchDescription
+from launch_ros.actions import Node
+from launch.substitutions import FindPackageShare
+import os
 
-<launch>
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find ls01g)/launch/rviz.rviz"/>
-</launch>
+def generate_launch_description():
+    # Find package share directory for rviz config
+    package_share_directory = FindPackageShare('ls01g')
+
+    # Define the RViz node
+    rviz_config_path = os.path.join(package_share_directory.launch_substitution(), 'launch', 'rviz.rviz')
+    rviz_node = Node(
+        package='rviz2',
+        executable='rviz2',
+        name='rviz',
+        arguments=['-d', rviz_config_path],
+        output='screen'
+    )
+
+    # Create and return the launch description
+    return LaunchDescription([
+        rviz_node
+    ])
